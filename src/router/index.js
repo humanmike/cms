@@ -7,6 +7,8 @@ Vue.use(Router)
 // 懒加载动态路由
 const login = () => import('views/login/Login')
 const Home = () => import('views/home/Home')
+const Welcome = () => import('views/home/Welcome')
+const User = () => import('views/user/User')
 
 // 导出路由参数
 const routes = [
@@ -24,6 +26,18 @@ const routes = [
   {
     path: '/home',
     component: Home,
+    redirect: '/welcome',
+    children: [
+      {
+        path: '/welcome',
+        component: Welcome
+      },
+      {
+        path: '/users',
+        component: User
+      },
+    ]
+    ,
     meta: {
       title: 'Home'
     }

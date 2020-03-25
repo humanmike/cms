@@ -12,27 +12,41 @@
         </el-header>
         <el-container>
             <!--侧边栏菜单布局-->
-            <el-aside class="home-side" width="200px">
-            <!--使用elementUi导航菜单-->
-                <el-menu
-                        >
+            <!--width 根据isCollapse来进行折叠时的宽度判断-->
+            <el-aside class="home-side" width="isCollapse ? 64px : 200px">
+                <!--折叠按钮-->
+                <div  class="coll-btn" @click="changeCollapse">| | |</div>
+                <!--使用elementUi导航菜单-->
+                <!--active-text-color是激活状态时菜单颜色,这个参数可以去官网查看对应-->
+                <!--unique-opened(布尔)是否只展开一个菜单其它折叠,这个参数可以去官网查看对应-->
+                <!--collapse 是否折叠属性-->
+                <!--collapse-transition 取消折叠动画-->
+                <!--router是否把菜单中的:index的参数变为路由地址,此处把二级菜单:index变路由跳转-->
+                <el-menu class="home-side-menu"
+                         active-text-color="#409EFF" :unique-opened="true"
+                         :collapse="isCollapse" :collapse-transition="false" :router="true">
                     <!--一级菜单区域-->
-                    <el-submenu index="1">
+                    <!--index参数接收的是一个字符串,所以需要通过拼接把数值变成字符串-->
+                    <el-submenu  class="itemSide"
+                            :index="item.id + ''" v-for="(item,index) in sideList" :key="item.id">
                         <!--一级菜单图标及文本-->
                         <template slot="title">
-                            <!--图标-->
-                            <i class="el-icon-location"></i>
+                            <!--绑定自己的图标-->
+                            <i :class="iconsObj[item.id]"></i>
                             <!--一文本-->
-                            <span>导航一</span>
+                            <span>{{item.authName}}</span>
                         </template>
                         <!--二级菜单区域-->
-                        <el-menu-item index="1-1">
+                        <!--二级菜单的遍历-->
+                        <el-menu-item :index="subItem.path"
+                                      class="itemSideSecond" v-for="subItem in item.children" :key="subItem.id">
                             <!--二级菜单图标及文本-->
                             <template slot="title">
                                 <!--图标-->
-                                <i class="el-icon-location"></i>
+                                <!--不同图标对应不同class,可以去官网查看-->
+                                <i class="el-icon-menu"></i>
                                 <!--一文本-->
-                                <span>导航一</span>
+                                <span>{{subItem.authName}}</span>
                             </template>
                         </el-menu-item>
                     </el-submenu>
@@ -40,26 +54,62 @@
 
             </el-aside>
             <!--主要内容布局-->
-            <el-main class="home-main" >Main</el-main>
+            <el-main class="home-main" >
+                <!--为home的子路由占位-->
+                <router-view/>
+            </el-main>
         </el-container>
     </el-container>
 </template>
 
 <script>
+    // 导入网络请求
+    // 获取侧面栏网络请求函数
+    import {getSidePageData} from 'network/home'
   export default {
     name: "Home",
     data() {
       return {
+        // 侧边菜单栏数据
+        sideList: [],
+        // 图标对应侧边菜单的icon图标
+        iconsObj: {
+          '125': 'iconfont icon-user',
+          '103': 'iconfont icon-tijikongjian',
+          '101': 'iconfont icon-shangpin',
+          '102': 'iconfont icon-danju',
+          '145': 'iconfont icon-baobiao',
 
+        },
+        // 侧菜单栏是否折叠
+        isCollapse: false,
       }
     },
     methods:{
+      // 1.网络请求
+      getSidePageData(){
+        getSidePageData().then(res => {
+          if(res.meta.status != 200) return this.$message.error('获取菜单栏数据失败')
+          this.sideList = res.data
+        })
+      },
+      // 2.事件监听
       // 登出
       logout () {
         // 清空浏览器缓存
         window.sessionStorage.clear()
         this.$router.push('/login')
+      },
+      // 折叠功能
+      changeCollapse() {
+        // 取反
+        this.isCollapse = !this.isCollapse
       }
+    },
+    // 挂载前执行
+    created() {
+      // 获取侧面菜单栏数据
+      this.getSidePageData()
     }
   }
 </script>
@@ -100,8 +150,31 @@
         border-radius: 50px;
     }
 
-    .home-side {
-        background-color: #333744;
+    /*设置侧边栏样式*/
+    /*去除el-menu多余样式*/
+    .el-menu {
+        border-right: none;
+    }
+
+    /*设置侧边栏每个item的间隔*/
+    .home-side .itemSide {
+        margin-top: 10px;
+        text-align: left;
+    }
+
+    /*设定侧边栏图标之间的间距*/
+    .home-side .iconfont {
+        margin-right: 5px;
+    }
+
+    /*折叠按钮处理*/
+    .coll-btn {
+        text-align: center;
+        font-size: 10px;
+        line-height: 24px;
+        color: #fff;
+        background-color: #4a5064;
+        cursor: pointer;
     }
 
     .home-main {
