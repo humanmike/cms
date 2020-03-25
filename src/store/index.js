@@ -11,7 +11,6 @@ Vue.use(Vuex)
 // vuex数据存放
 const state = {
   userMsg: {
-    token: null
   }
 }
 

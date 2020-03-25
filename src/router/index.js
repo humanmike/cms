@@ -1,7 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-// 导入vuex数据存储
-import store from "store";
 
 // 安装组件
 Vue.use(Router)
@@ -31,7 +29,6 @@ const routes = [
     }
   },
 ]
-
 // 实例化路由
 const router = new Router({
   routes,
@@ -41,11 +38,10 @@ const router = new Router({
 
 // 导航守卫
 router.beforeEach((to, form, next) => {
-  console.log(store.state.userMsg.token);
   if (to.path === '/login') {
     return next()
   }
-  if (store.state.userMsg.token == null) {
+  if ( window.sessionStorage.token == undefined) {
     return next('/login')
   }else {
     return next()

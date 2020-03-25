@@ -24,8 +24,14 @@ Vue.prototype.$message = ElementUi.Message
 
 Vue.config.productionTip = false
 
+
+
+
 new Vue({
   render: h => h(App),
   router,
   store,
 }).$mount('#app')
+
+
+

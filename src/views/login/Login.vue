@@ -75,9 +75,9 @@
           if(!vaild) return this.$message.error('登陆失败')
           loginApi(this.loginForm).then(res => {
             this.$message.success('登陆成功')
-            // 使用vuex记录用户token数据
-            this.$store.commit('getUsrToken',res.data)
-            // 跳转对应路由
+            // 记录token到本地storage中
+            window.sessionStorage.setItem('token', res.data.token)
+            // 跳转的首页路由
             this.$router.push('/home')
           })
         })
