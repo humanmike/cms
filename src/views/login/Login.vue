@@ -89,8 +89,6 @@
 <style scoped>
     /*设置整体登陆容器样式*/
     #login-container {
-        position: absolute;
-        width: 100%;
         height: 100%;
         background-color: #2b4b6b;
     }
