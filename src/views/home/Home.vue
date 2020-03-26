@@ -114,7 +114,6 @@
       activeSideButton(path) {
         const sidePath = '/' + path
         // 存入缓存中,保证刷新的的时候效果还在
-        console.log(sidePath);
         window.sessionStorage.setItem('activePath', sidePath)
         this.defaultSideButtonValue = sidePath
       }
@@ -122,12 +121,10 @@
     },
     // 挂载前执行
     created() {
-      console.log('---');
       // 获取侧面菜单栏数据
       this.getSidePageData()
       // 查看是否有激活的侧边栏按钮
       this.defaultSideButtonValue = window.sessionStorage.activePath
-      console.log(this.defaultSideButtonValue);
     }
   }
 </script>
