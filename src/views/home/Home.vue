@@ -17,6 +17,7 @@
                 <!--折叠按钮-->
                 <div  class="coll-btn" @click="changeCollapse">| | |</div>
                 <!--使用elementUi导航菜单-->
+                <!--NavMenu导航菜单(el-menu)-->
                 <!--active-text-color是激活状态时菜单颜色,这个参数可以去官网查看对应-->
                 <!--unique-opened(布尔)是否只展开一个菜单其它折叠,这个参数可以去官网查看对应-->
                 <!--collapse 是否折叠属性-->

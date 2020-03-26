@@ -21,7 +21,8 @@ Vue.use(toast)
 
 // 挂载elementUi的弹窗对象挂载到原型对象上让全局都可以调用
 Vue.prototype.$message = ElementUi.Message
-
+// 挂载MessageBox弹框让全局都可以调用
+Vue.prototype.$confirm = ElementUi.MessageBox.confirm
 Vue.config.productionTip = false
 
 
