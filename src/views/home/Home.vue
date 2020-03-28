@@ -83,7 +83,6 @@
           '101': 'iconfont icon-shangpin',
           '102': 'iconfont icon-danju',
           '145': 'iconfont icon-baobiao',
-
         },
         // 侧菜单栏是否折叠
         isCollapse: false,
