@@ -23,15 +23,15 @@
                 <!--collapse 是否折叠属性-->
                 <!--collapse-transition 取消折叠动画-->
                 <!--router是否把菜单中的:index的参数变为路由地址,此处把二级菜单:index变路由跳转-->
-                <!--active-text-color:当前激活菜单的文字颜色-->
+                <!--default-active:当前激活菜单的 index用于刷新的时候保证菜单还有记录-->
                 <el-menu class="home-side-menu"
                          active-text-color="#409EFF" :unique-opened="true"
                          :collapse="isCollapse" :collapse-transition="false"
-                         :router="true" :active-text-color="defaultSideButtonValue">
+                         :router="true" :default-active="defaultSideButtonValue">
                     <!--一级菜单区域-->
                     <!--index参数接收的是一个字符串,所以需要通过拼接把数值变成字符串-->
                     <el-submenu  class="itemSide"
-                            :index="item.id + ''" v-for="(item,index) in sideList" :key="item.id">
+                            :index="'/'+item.path" v-for="(item,index) in sideList" :key="item.id">
                         <!--一级菜单图标及文本-->
                         <template slot="title">
                             <!--绑定自己的图标-->
@@ -41,7 +41,7 @@
                         </template>
                         <!--二级菜单区域-->
                         <!--二级菜单的遍历-->
-                        <el-menu-item :index="subItem.path"
+                        <el-menu-item :index="'/' + subItem.path"
                                       class="itemSideSecond"
                                       v-for="subItem in item.children" :key="subItem.id" @click="activeSideButton(subItem.path)">
                             <!--二级菜单图标及文本-->
@@ -115,6 +115,8 @@
         const sidePath = '/' + path
         // 存入缓存中,保证刷新的的时候效果还在
         window.sessionStorage.setItem('activePath', sidePath)
+        // 预防万一清空下数据
+        this.defaultSideButtonValue = ''
         this.defaultSideButtonValue = sidePath
       }
 

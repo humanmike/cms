@@ -52,6 +52,7 @@
                     <!--slot-scope来获取作用域插槽数据-->
                     <template slot-scope="scope">
                         <!--开关(el-switch),这个参数可以去官网查看对应-->
+                        <!--这个api只需要把原本的mg_state传到服务器,就会自动取反-->
                         <el-switch
                                 v-model="scope.row.mg_state" @change="checkSwitchChange(scope.row)">
                         </el-switch>
