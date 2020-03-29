@@ -9,6 +9,8 @@ const login = () => import('views/login/Login')
 const Home = () => import('views/home/Home')
 const Welcome = () => import('views/home/Welcome')
 const User = () => import('views/user/User')
+const Rights = () => import('views/power/Rights')
+const Roles = () => import('views/power/Roles')
 
 // 导出路由参数
 const routes = [
@@ -35,6 +37,13 @@ const routes = [
       {
         path: '/users',
         component: User
+      },
+      {
+        path: '/rights',
+        component: Rights
+      },  {
+        path: '/roles',
+        component: Roles
       },
     ]
     ,

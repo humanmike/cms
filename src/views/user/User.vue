@@ -67,21 +67,39 @@
                         <el-button @click="deleteDataBtn(scope.row.id)" type="danger" icon="el-icon-delete" size="small"></el-button>
                         <!--文字提示(el-tooltip),这个参数可以去官网查看对应-->
                         <!--enterable: 鼠标移动消失-->
-                        <el-tooltip :enterable='false' content="添加用户" placement="top">
-                            <el-button type="warning" icon="el-icon-setting" size="small"></el-button>
+                        <el-tooltip :enterable='false' content="分配权限" placement="top">
+                            <el-button type="warning" icon="el-icon-setting" size="small" @click="shareRolesFunc(scope.row)"></el-button>
                         </el-tooltip>
                     </template>
                 </el-table-column>
             </el-table>
+            <!--分配权限用户dialog框-->
+            <el-dialog title="分配权限" :visible.sync="shareRolesDialogVisible">
+                <div class="share-cls">
+                    <p>当前的用户: {{shareUsrForm.username}}</p>
+                    <p>当前的角色: {{shareUsrForm.role_name}}</p>
+                    <p>分配新角色:
+                        <!--select选择器(el-select)-->
+                        <!--v-model双向绑定select选择器选中后的值-->
+                        <!--:label 用户展示可选择的数据-->
+                        <!--:value 最终选中之后传给v-model的值-->
+                        <el-select v-model="selectRoles" placeholder="请选择">
+                            <el-option v-for="item in rolesList" :key="item.id" :label="item.roleName" :value="item.id"/>
+                        </el-select>
+                    </p>
+                </div>
+                <span slot="footer" class="dialog-footer">
+                    <el-button @click="shareRolesDialogVisible = false">取 消</el-button>
+                    <!--setSelectRolesFunc确定修改用户权限函数-->
+                    <el-button type="primary" @click="setSelectRolesFunc">确 定</el-button>
+                </span>
+            </el-dialog>
+
             <!--添加用户dialog框-->
             <!--dialog(el-gialog),这个参数可以去官网查看对应-->
             <!--visible.sync是否显示该对话框-->
             <!--dialog监听对话框关闭函数-->
-            <el-dialog
-                    title="添加用户"
-                    :visible.sync="dialogVisible"
-                    width="30%"
-                    @close="addDialogClosed">
+            <el-dialog title="添加用户" :visible.sync="dialogVisible" @close="addDialogClosed">
                 <!--dialog框嵌套Input框-->
                 <el-form ref="showUserElFormRef" :model="addUserForm"  :rules="addUserRuleForm" class="demo-ruleForm" label-width="80px">
                     <el-form-item label="用户名" prop="username">
@@ -98,17 +116,12 @@
                     </el-form-item>
                 </el-form>
                 <el-button @click="dialogVisible = false">取 消</el-button>
+                <!--addUserFunc确定添加用户函数-->
                 <el-button type="primary" @click="addUserFunc">确 定</el-button>
             </el-dialog>
             <!--修改用户dialog框-->
-            <el-dialog
-                    title="提示"
-                    :visible.sync="changeDialogVisible"
-                    width="30%">
-                    <el-form ref="updateUserElFormRef"
-                             :model="updateForm" @close="updateDialogClosed"
-                             :rules="updateFormRule"  class="demo-ruleForm"
-                             label-width="80px">
+            <el-dialog title="修改用户" :visible.sync="changeDialogVisible">
+                    <el-form ref="updateUserElFormRef" :model="updateForm" @close="updateDialogClosed" :rules="updateFormRule"  class="demo-ruleForm">
                         <el-form-item label="用户名:">
                         <el-input disabled v-model="updateForm.username"></el-input>
                         </el-form-item>
@@ -121,6 +134,7 @@
                     </el-form>
                 <span slot="footer" class="dialog-footer">
                     <el-button @click="changeDialogVisible = false">取 消</el-button>
+                    <!--updateUserData确定修改用户信息函数-->
                     <el-button type="primary" @click="updateUserData">确 定</el-button>
                 </span>
             </el-dialog>
@@ -149,7 +163,17 @@
 
 <script>
     // 导入网络请求
-    import {getUserListApi,getUserTypeToChangeApi,addUserApi,searchUserApi,updateUserApi,deleteUserApi} from 'network/user'
+    import
+    {
+      getUserListApi,
+      getUserTypeToChangeApi,
+      addUserApi,
+      searchUserApi,
+      updateUserApi,
+      deleteUserApi,
+      getUserRolesApi,
+      setUserRolesApi,
+    } from 'network/user'
   export default {
     name: "User",
     data(){
@@ -189,6 +213,8 @@
         dialogVisible: false,
         // 控制修改用户对话框的显示和隐藏
         changeDialogVisible: false,
+        // 控制分配权限对话框的显示和隐藏
+        shareRolesDialogVisible: false,
         // 添加用户信息
         addUserForm: {
           username: '',
@@ -200,6 +226,8 @@
         updateForm: {
 
         },
+        // 当前需要修改全选的用户对象
+        shareUsrForm: {},
         // 校验用户规则
         addUserRuleForm: {
           username: [
@@ -231,11 +259,36 @@
             { required: true, message: '请输入手机', trigger: 'blur' },
             { validator: checkMobile, trigger: 'blur' }
           ],
-        }
+        },
+        // 分配角色列表
+        rolesList: [],
+        // 选定的角色列表值:
+        selectRoles: '',
+        // 获取需要修改权限的角色id
+        saveRolesId: '',
       }
     },
     methods: {
       // 1.网络请求
+      // 获取角色列表Api
+      getUserRolesApi() {
+        getUserRolesApi().then(res => {
+          if (res.meta.status != 200) return this.$message.error('获取角色列表数据失败')
+          this.rolesList = res.data
+        })
+      },
+      // 修改角色列表Api
+      setUserRolesApi(ridObj) {
+        setUserRolesApi(this.saveRolesId, ridObj).then(res => {
+          if (res.meta.status != 200) return this.$message.error('修改角色权限失败')
+          // 刷新用户列表
+          this.getUserListApi()
+          // 关闭dialog框
+          this.shareRolesDialogVisible = false
+          // 弹出成功提示
+          return this.$message.success('修改角色权限成功')
+        })
+      },
       // 获取用户列表数据Api
       getUserListApi(){
         getUserListApi(this.queryInfo).then(res => {
@@ -296,6 +349,23 @@
         })
       },
       // 2.事件监听
+      // 修改用户权限
+      setSelectRolesFunc() {
+        // 用户修改后的角色对象
+        const ridObj = {rid: this.selectRoles}
+        // 像服务器发送修改数据
+        this.setUserRolesApi(ridObj)
+      },
+      // 分配权限函数
+      shareRolesFunc(shareUsrForm) {
+        // 获取需要修改权限的角色id
+        this.saveRolesId = shareUsrForm.id
+        // 当前需要修改全选的用户对象
+        this.shareUsrForm = shareUsrForm
+        this.shareRolesDialogVisible = true
+        // 获取角色列表Api数据
+        this.getUserRolesApi()
+      },
       // pageSize 监听显示总页数
       handleSizeChange(size){
         this.queryInfo.pagesize = size
@@ -366,6 +436,10 @@
 <style scoped>
     #user {
         color: #333333;
+    }
+
+    .share-cls {
+        text-align: left;
     }
 
 </style>

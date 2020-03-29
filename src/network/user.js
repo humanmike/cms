@@ -52,3 +52,22 @@ export function deleteUserApi(id) {
     method: 'delete'
   })
 }
+
+
+// 获取角色列表
+export function getUserRolesApi() {
+  return request({
+    url: '/roles',
+    method: 'get',
+  })
+}
+
+
+// 分配用户角色
+export function setUserRolesApi(id,rid) {
+  return request({
+    url: `/users/${id}/role`,
+    method: 'put',
+    data: rid
+  })
+}
