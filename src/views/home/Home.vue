@@ -134,7 +134,6 @@
 <style scoped>
     .home-container {
         height: 100%;
-        text-align: center;
         color: #eaeaea;
     }
 

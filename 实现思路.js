@@ -74,3 +74,38 @@
 // 使用dialog来填充内容
 // 使用select选择器选择内容,请根据官网注意其用法
 // 选择成功后使用axios传递服务器修改值
+
+// 商品管理
+// 商品分类
+// 使用第三方组件的树式table表格来渲染数据
+// npm install vue-table-with-tree-grid --save
+// 参考链接
+// https://github.com/MisterTaki/vue-table-with-tree-grid
+// main.js配置该组件为全局组件并在项目中使用
+// 导入树形table表格
+// import TreeTable from 'vue-table-with-tree-grid'
+// // 注册成全局组件
+// Vue.component('tree-table',TreeTable)
+<!--树table插件表格-->
+<!--:data接收的数据源-->
+<!--:columns接收是一个数组,数组中的每个对象对应每列展示的限制
+label展示的名字, prop会根据里面的值去递归整个列表,然后找出对应的值得,分级对应的显示出来
+type将当前列定义为模板列(这个template值为写死) template当前这一列指定的模板名称-->
+<!--selection-type 是否为多选类型表格(布尔值)-->
+<!--expand-type 是否为展开类型表格(布尔值)-->
+<!--show-index自动添加索引列(布尔值)-->
+<!--index-text自定义索引列名称String-->
+<!--border添加纵向边框线-->
+<!--:change-on-select 是可以选择父级菜单的选择器,但官方已经没有推荐,仍然可以使用-->
+
+
+// 在商品分类中的dialog框里面的选择器为级联选择器Cascader 参数如下
+// <!--:options具体数据源-->
+// <!--:value双向绑定数据,因为是多级菜单,这里需要绑定一个数组-->
+// <!--:props数据渲染规则 value代表最后选择的值,label用户看到的值,childeren具体渲染的父下面的子菜单-->
+// <!--:clearable 是否支持清空-->
+// <!--change监听选中节点的变化-->
+// <!--:change-on-select 是可以选择父级菜单的选择器,但官方已经没有推荐,仍然可以使用-->
+// 在关闭分类dialog框的时候记得,清空所有的数据,保证用户下次进入仍为初始状态
+// (注意:这里服务器有个bug,只有添加父级标签才可以成功,和前端代码无关)
+

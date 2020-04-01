@@ -1,11 +1,10 @@
-import store from "store";
 import axios from 'axios'
 
 
 // 网络请求封装
 export function request(config) {
   const instance = new axios.create({
-    baseURL: 'http://192.168.0.106:8888/api/private/v1',
+    baseURL: 'http://192.168.0.107:8888/api/private/v1',
     timeout: '5000',
   })
 

@@ -24,14 +24,10 @@
                                       v-model="queryInfo.query" :clearable="true" @clear="getUserListApi"></el-input>
                         </div>
                     </el-col>
-                    <el-col :span="2" class="spec">
+                    <el-col class="spec">
                         <div class="grid-content bg-purple-light spec">
                             <!--触发指定内容网络请求查询-->
                             <el-button  type="primary" @click="getUserListApi">查询</el-button>
-                        </div>
-                    </el-col>
-                    <el-col :span="1">
-                        <div class="grid-content bg-purple-light">
                             <!--把dialogVisible修改为true显示添加对话框-->
                             <el-button  type="primary" @click="dialogVisible=true">添加用户</el-button>
                         </div>
@@ -441,6 +437,14 @@
 
     .share-cls {
         text-align: left;
+    }
+
+    .el-row {
+        display: flex;
+    }
+
+    .el-row .spec {
+        margin-left: 5px;
     }
 
 </style>
