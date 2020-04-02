@@ -12,6 +12,7 @@ const User = () => import('views/user/User')
 const Rights = () => import('views/power/Rights')
 const Roles = () => import('views/power/Roles')
 const Category = () => import('views/goods/Category')
+const Params = () => import('views/goods/Params')
 
 // 导出路由参数
 const routes = [
@@ -50,6 +51,10 @@ const routes = [
       {
         path: '/categories',
         component: Category
+      },
+      {
+        path: '/params',
+        component: Params
       },
     ]
     ,
