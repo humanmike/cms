@@ -38,7 +38,7 @@
                         <el-table-column type="expand" width="100">
                             <!--渲染额外添加栏内容-->
                             <template slot-scope="scope">
-                                <el-tag closable class="expand-tag-cls" type="primary" v-for="(item, index) in scope.row.attr_vals" :key="index">
+                                <el-tag @close="deleteThreeParamsFunc(scope.row, index)" closable class="expand-tag-cls" type="primary" v-for="(item, index) in scope.row.attr_vals" :key="index">
                                     {{item}}
                                 </el-tag>
                             </template>
@@ -49,6 +49,7 @@
                             <template slot-scope="scope">
                                 <el-button type="primary" @click="showChangeParamsDialogFunc(scope.row)">编辑</el-button>
                                 <el-button type="danger" @click="deleteParamsFunc(scope.row)">删除</el-button>
+                                <el-button type="warning" @click="showThreeParamsDialogFunc(scope.row)">添加或修改三级子参数</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -62,7 +63,7 @@
                         <el-table-column type="expand" width="100">
                             <!--渲染额外添加栏内容-->
                             <template slot-scope="scope">
-                                <el-tag closable class="expand-tag-cls" type="primary" v-for="(item, index) in scope.row.attr_vals" :key="index">
+                                <el-tag @close="deleteThreeParamsFunc(scope.row)"  closable class="expand-tag-cls" type="primary" v-for="(item, index) in scope.row.attr_vals" :key="index">
                                     {{item}}
                                 </el-tag>
                             </template>
@@ -73,6 +74,7 @@
                             <template slot-scope="scope">
                                 <el-button type="primary" @click="showChangeParamsDialogFunc(scope.row)">编辑</el-button>
                                 <el-button type="danger" @click="deleteParamsFunc(scope.row)">删除</el-button>
+                                <el-button type="warning" @click="showThreeParamsDialogFunc(scope.row)">添加或修改三级子参数</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -105,6 +107,27 @@
           </span>
         </el-dialog>
 
+        <!--三级菜单子参数dialog框-->
+        <el-dialog title="添加三级子参数菜单" :visible.sync="threeParamsDialogVisible" @close="clearThreeDialogFunc">
+            <el-form ref="addThreeParamsFormRef" :model="addThreeParamsForm" :rules="addThreeParamsFormRules">
+                <el-select v-model="selectThreeValue" placeholder="请选择">
+                    <el-option
+                            v-for="(item,index) in addThreeParamsForm.attr_vals"
+                            :key="index"
+                            :label="item"
+                            :value="index">
+                    </el-option>
+                </el-select>
+                <el-form-item label="添加或者修改你的参数" prop="attr_name">
+                    <el-input v-model="selectThreeNewValue"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+            <el-button @click="threeParamsDialogVisible = false">取 消</el-button>
+            <el-button type="primary"  @click="addThreeParamsFunc">确 定</el-button>
+          </span>
+        </el-dialog>
+
     </div>
 </template>
 
@@ -116,6 +139,7 @@
       addParamsStateApi,
       changeParamsStateApi,
       deleteParamsStateApi,
+      addParamsThreeApi,
     } from 'network/params'
   export default {
     name: "Params",
@@ -160,6 +184,16 @@
             { required: true, message: '请输入参数', trigger: 'blur' },
           ]
         },
+        // 是否展示三级菜单子参数diaLog框
+        threeParamsDialogVisible: false,
+        // 添加三级菜单子参数表单
+        addThreeParamsForm: {},
+        // 添加三级菜单子参数表单校验规则
+        addThreeParamsFormRules: {},
+        // 双向绑定三级子菜单select数据
+        selectThreeValue: null,
+        // 双向绑定三级子菜单新数据
+        selectThreeNewValue: '',
       }
     },
     computed: {
@@ -274,6 +308,30 @@
           this.$message.success('删除动静态父参数成功')
         })
       },
+      // 添加三级菜单子参数Api
+      addParamsThreeApi(attrVals,attr_id,attr_name) {
+        // 拼接添加值
+        // 必传三级菜单id值
+        const threeId = this.cascdetSelectList[this.cascdetSelectList.length-1]
+        // attr_id: 三级菜单子参数id
+        // attr_name:新参数的值
+        // attr_sel:具体是动态还是静态
+        // attr_vals: 三级菜单子参数字符串集
+        const attrForm = {
+          attr_name: attr_name,
+          attr_sel: this.elTagsActiveName,
+          attr_vals: attrVals,
+        }
+        addParamsThreeApi(threeId,attr_id,attrForm).then(res => {
+          if (res.meta.status != 200) return this.$message.error('更新三级菜单子参数失败')
+          // 刷新页面
+          this.getParamsStateApi()
+          // 关闭dialog框
+          this.threeParamsDialogVisible = false
+          // 返回成功提示
+          this.$message.success('更新三级菜单子参数成功')
+        })
+      },
       // 2.事件监听
       // 监听级联菜单选择的改变函数
       cascHandleChangeFunc() {
@@ -320,14 +378,14 @@
         // 把从编辑的作用域插槽数据给到编辑的form表单
         this.changeParamsForm = row
       },
-      // 编辑动静态参数到服务器
+      // 编辑动静态参数到服务器函数
       changeParamsFunc() {
         this.$refs.changeParamsFormRef.validate(vali => {
           if(!vali) return this.$message.error('编辑参数信息填写有误,请重新填写')
           this.changeParamsStateApi()
         })
       },
-      // 删除动静态参数到服务器
+      // 删除动静态参数到服务器函数
       deleteParamsFunc(row) {
         this.$confirm('此操作将永久删除该三级菜单的父类参数, 是否继续?', '提示', {
           confirmButtonText: '确定',
@@ -338,7 +396,52 @@
         }).catch(errRep => {
           return this.$message.info('取消删除动静态父参数成功')
         })
+      },
+      // 清空添加三级菜单子参数dialog框参数函数
+      clearThreeDialogFunc() {
+        this.$refs.addThreeParamsFormRef.resetFields()
+      },
+      // 展示添加三级菜单子参数dialog框函数
+      showThreeParamsDialogFunc(row) {
+        // 显示三级菜单子参数dialog框
+        this.threeParamsDialogVisible = true
+        // 把通过template row获取到的值,给到三级菜单表单
+        this.addThreeParamsForm = row
+      },
+      // 添加或修改三级菜单子参数函数
+      addThreeParamsFunc() {
+        // 获取三级菜单名称
+        const attr_name = this.addThreeParamsForm.attr_name
+        // 获取三年级菜单的参数id
+        const attr_id = this.addThreeParamsForm.attr_id
+        // 判断时修改逻辑还是全新添加逻辑
+        if (this.selectThreeValue != null) {
+          // 修改参数逻辑
+          // 替换原本的的旧数据
+          this.addThreeParamsForm.attr_vals.splice(this.selectThreeValue,1,this.selectThreeNewValue)
+        }else {
+          // 全新数据提交逻辑
+          this.addThreeParamsForm.attr_vals.push(this.selectThreeNewValue)
+        }
+        // 把数据便会最初从服务器返回时的字符串
+        const new_attr_vals = this.addThreeParamsForm.attr_vals.join(',')
+        this.addParamsThreeApi(new_attr_vals,attr_id,attr_name)
+      },
+      // 删除三级菜单子参数函数
+      deleteThreeParamsFunc(row, index) {
+        // 获取三级菜单名称
+        const attr_name = row.attr_name
+        // 获取三年级菜单的参数id
+        const attr_id = row.attr_id
+        // 删除对应的三级菜单子参数
+        row.attr_vals.splice(index,1)
+        // 把数据便会最初从服务器返回时的字符串
+        const new_attr_vals = row.attr_vals.join(',')
+        // 调用同修改或添加的接口
+        this.addParamsThreeApi(new_attr_vals,attr_id,attr_name)
+
       }
+
     },
     created() {
       // 发送获取级联菜单多级商品分类信息Api

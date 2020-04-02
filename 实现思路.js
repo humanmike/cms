@@ -69,6 +69,7 @@
 // 在点击分配权限的时候使用递归来获取三级组件的具体id值数据,放到default-checked-keys(默认勾选节点数组中)
 // 根据getCheckedKeys() ,getHalfCheckedKeys()来获取选中的父子节点
 // 通过选出来的值使用axios传递的服务器
+
 // 2.2.8用户管理的分配权限的默认选项实现
 // 使用dialog来填充内容
 // 使用select选择器选择内容,请根据官网注意其用法
@@ -144,6 +145,19 @@ type将当前列定义为模板列(这个template值为写死) template当前这
 
 // 3.2.10 删除按钮
 // 使用messageBox来完成,具体需要的参数也可从template模板中scope获取
+
+// 3.2.11 添加或修改三级子参数
+// 通过template模板中scope获取获取attr_vals遍历到select菜单中
+// 在添加或修改参数中处理attr_vals参数,通过select来修改
+// 如果不选择select则是添加需要判断select双向绑定的index值
+// 可以为index值定义null,根据null来判断添加还是修改
+// 记得传回给服务器的时候把attr_vals变回字符串集
+
+// 3.2.12 删除三级子参数
+// 同样通过template模板中scope获取获取attr_vals遍历到select菜单中
+// scope.row获取attr_id,attr_name然后通过splice删除
+// 最后转会字符串集
+// 掉3.2.11的接口去进行删除
 
 // 3.3商品列表
 // 大致样式和用户管理用户列表基本一致

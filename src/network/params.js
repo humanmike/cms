@@ -66,4 +66,19 @@ export function deleteParamsStateApi(threeId,attrId,attrForm) {
   })
 }
 
+// 添加三级菜单子参数
+// threeId当前三级菜单的id
+// attrId 三级菜单下的参数id
+// attrForm应该包含
+// 1.attr_name 新参数名称
+// 2.attr_sel 属于动态还是静态(many only)
+// 3.attr_vals: 修改后的三级菜单子参数的字符串
+export function addParamsThreeApi(threeId,attrId,attrForm) {
+  return request({
+    url: `categories/${threeId}/attributes/${attrId}`,
+    method: 'put',
+    data: attrForm,
+  })
+}
+
 
