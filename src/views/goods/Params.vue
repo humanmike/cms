@@ -47,8 +47,8 @@
                         <el-table-column prop="attr_name" label="参数名称"></el-table-column>
                         <el-table-column label="操作">
                             <template slot-scope="scope">
-                                <el-button type="primary">编辑</el-button>
-                                <el-button type="danger">删除</el-button>
+                                <el-button type="primary" @click="showChangeParamsDialogFunc(scope.row)">编辑</el-button>
+                                <el-button type="danger" @click="deleteParamsFunc(scope.row)">删除</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -71,15 +71,15 @@
                         <el-table-column prop="attr_name" label="参数名称"></el-table-column>
                         <el-table-column label="操作">
                             <template slot-scope="scope">
-                                <el-button type="primary">编辑</el-button>
-                                <el-button type="danger">删除</el-button>
+                                <el-button type="primary" @click="showChangeParamsDialogFunc(scope.row)">编辑</el-button>
+                                <el-button type="danger" @click="deleteParamsFunc(scope.row)">删除</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
                 </el-tab-pane>
             </el-tabs>
         </el-card>
-        <!--动静态添加参数dialog框-->
+        <!--添加动静态参数dialog框-->
         <el-dialog :title="'添加'+ showDialogTitle" :visible.sync="addDialogVisible" @close="clearAddDialogFunc">
             <el-form ref="addParamsFormRef" :model="addParamsForm" :rules="addParamsFormRules">
                 <el-form-item label="参数名称" prop="attr_name">
@@ -88,9 +88,23 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
             <el-button @click="addDialogVisible = false">取 消</el-button>
-            <el-button type="primary" @click="addDialogVisible = false">确 定</el-button>
+            <el-button type="primary"  @click="addParamsFunc">确 定</el-button>
           </span>
         </el-dialog>
+
+        <!--编辑动静态dialog框-->
+        <el-dialog :title="'编辑'+ showDialogTitle" :visible.sync="changeDialogVisible" @close="clearchangeDialogFunc">
+            <el-form ref="changeParamsFormRef" :model="changeParamsForm" :rules="changeParamsFormRules">
+                <el-form-item label="参数名称" prop="attr_name">
+                    <el-input v-model="changeParamsForm.attr_name"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+            <el-button @click="changeDialogVisible = false">取 消</el-button>
+            <el-button type="primary"  @click="changeParamsFunc">确 定</el-button>
+          </span>
+        </el-dialog>
+
     </div>
 </template>
 
@@ -99,6 +113,9 @@
     import {
       getCategoriesApi,
       getParamsStateApi,
+      addParamsStateApi,
+      changeParamsStateApi,
+      deleteParamsStateApi,
     } from 'network/params'
   export default {
     name: "Params",
@@ -121,7 +138,7 @@
         manyTableList: [],
         // 静态参数列表存放
         onlyTableList: [],
-        // 是否展示动静态diaLog框
+        // 是否展示添加动静态diaLog框
         addDialogVisible: false,
         // 添加动静态分类属性的双向绑定数据源
         addParamsForm: {
@@ -129,6 +146,16 @@
         },
         // 添加动静态分类属性的双向绑定数据源校验规则
         addParamsFormRules: {
+          attr_name: [
+            { required: true, message: '请输入参数', trigger: 'blur' },
+          ]
+        },
+        // 是否展示编辑动静态diaLog框
+        changeDialogVisible: false,
+        // 编辑动静态分类属性的双向绑定数据源
+        changeParamsForm: {},
+        // 编辑动静态分类属性的双向绑定数据源校验规则
+        changeParamsFormRules: {
           attr_name: [
             { required: true, message: '请输入参数', trigger: 'blur' },
           ]
@@ -160,7 +187,7 @@
           this.cateTableList = res.data
         })
       },
-      // 获取动静态参数列表
+      // 获取动静态参数列表Api
       getParamsStateApi() {
         // 获取三级菜单id
         const threeId = this.cascdetSelectList[this.cascdetSelectList.length-1]
@@ -187,6 +214,64 @@
               return n.attr_vals =n.attr_vals.split(',')
             })
           }
+        })
+      },
+      // 添加动静态父参数Api
+      addParamsStateApi() {
+        // 拼接添加值
+        // 必传id值
+        const threeId = this.cascdetSelectList[this.cascdetSelectList.length-1]
+        // attr_name:新参数的值
+        // attr_sel:具体是动态还是静态
+        const attrForm = {
+          attr_name: this.addParamsForm.attr_name,
+          attr_sel: this.elTagsActiveName,
+        }
+        addParamsStateApi(threeId, attrForm).then(res => {
+          if (res.meta.status != 201) return this.$message.error('添加动静态参数失败')
+          // 刷新页面
+          this.getParamsStateApi()
+          // 关闭dialog框
+          this.addDialogVisible = false
+          // 返回成功提示
+          this.$message.success('添加动静态参数成功')
+        })
+      },
+      // 编辑动静态父参数Api
+      changeParamsStateApi() {
+        // 拼接添加值
+        // 必传id值
+        const threeId = this.cascdetSelectList[this.cascdetSelectList.length-1]
+        const attrId = this.changeParamsForm.attr_id
+        // attr_name:新参数的值
+        // attr_sel:具体是动态还是静态
+        const attrForm = {
+              attr_name: this.changeParamsForm.attr_name,
+              attr_sel: this.elTagsActiveName,
+        }
+        changeParamsStateApi(threeId, attrId, attrForm).then(res => {
+          if (res.meta.status != 200) return this.$message.error('编辑动静态参数失败')
+          // 刷新页面
+          this.getParamsStateApi()
+          // 关闭dialog框
+          this.changeDialogVisible = false
+          // 返回成功提示
+          this.$message.success('编辑动静态参数成功')
+        })
+      },
+      // 删除动静态父参数Api
+      deleteParamsStateApi(form) {
+        // attr_id三级id,cat_id是当前三级id下参数的id
+        const {attr_id, cat_id} = form
+        const attrForm = {
+          attr_sel: this.elTagsActiveName,
+        }
+        deleteParamsStateApi(cat_id, attr_id, attrForm).then(res => {
+          if (res.meta.status != 200) return this.$message.error('删除动静态父参数失败')
+          // 刷新页面
+          this.getParamsStateApi()
+          // 返回成功提示
+          this.$message.success('删除动静态父参数成功')
         })
       },
       // 2.事件监听
@@ -216,6 +301,44 @@
         // 清空数据
         this.$refs.addParamsFormRef.resetFields()
       },
+      // 添加动静态参数到服务器
+      addParamsFunc() {
+        this.$refs.addParamsFormRef.validate(vali => {
+          if(!vali) return this.$message.error('参数名称填写有误')
+            this.addParamsStateApi()
+        })
+      },
+      // 清空编辑动静态参数dialog框函数
+      clearchangeDialogFunc() {
+        this.$refs.changeParamsFormRef.resetFields()
+
+      },
+      // 展示编辑动静态参数dialog框函数
+      showChangeParamsDialogFunc(row) {
+        // 展示编辑dialog框页面
+        this.changeDialogVisible = true
+        // 把从编辑的作用域插槽数据给到编辑的form表单
+        this.changeParamsForm = row
+      },
+      // 编辑动静态参数到服务器
+      changeParamsFunc() {
+        this.$refs.changeParamsFormRef.validate(vali => {
+          if(!vali) return this.$message.error('编辑参数信息填写有误,请重新填写')
+          this.changeParamsStateApi()
+        })
+      },
+      // 删除动静态参数到服务器
+      deleteParamsFunc(row) {
+        this.$confirm('此操作将永久删除该三级菜单的父类参数, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(successRep => {
+          this.deleteParamsStateApi(row)
+        }).catch(errRep => {
+          return this.$message.info('取消删除动静态父参数成功')
+        })
+      }
     },
     created() {
       // 发送获取级联菜单多级商品分类信息Api

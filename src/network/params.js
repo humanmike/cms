@@ -24,3 +24,46 @@ export function getParamsStateApi(id,sel) {
     params: sel,
   })
 }
+
+// 添加动静态参数
+// threeId当前三级菜单的id
+// attrForm应该包含
+// 1.attr_name 新参数名称
+// 2.attr_sel 属于动态还是静态(many only)
+export function addParamsStateApi(threeId,attrForm) {
+  return request({
+    url: `categories/${threeId}/attributes`,
+    method: 'post',
+    data: attrForm,
+  })
+}
+
+// 编辑动静态参数
+// threeId当前三级菜单的id
+// attrId 三级菜单下的参数id
+// attrForm应该包含
+// 1.attr_name 新参数名称
+// 2.attr_sel 属于动态还是静态(many only)
+export function changeParamsStateApi(threeId,attrId,attrForm) {
+  return request({
+    url: `categories/${threeId}/attributes/${attrId}`,
+    method: 'put',
+    data: attrForm,
+  })
+}
+
+
+// 删除动静态参数
+// threeId当前三级菜单的id
+// attrId 三级菜单下的参数id
+// attrForm应该包含
+// 1.attr_sel 属于动态还是静态(many only)
+export function deleteParamsStateApi(threeId,attrId,attrForm) {
+  return request({
+    url: `categories/${threeId}/attributes/${attrId}`,
+    method: 'delete',
+    params: attrForm,
+  })
+}
+
+
