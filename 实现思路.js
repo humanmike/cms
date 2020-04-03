@@ -161,4 +161,28 @@ type将当前列定义为模板列(这个template值为写死) template当前这
 
 // 3.3商品列表
 // 大致样式和用户管理用户列表基本一致
+// 添加商品列表是一个全新的路由
+// 里面使用了步骤条组件el-steps
+// 并且标签页el-tabs使用的是标签页,有特定属性tab-position
+// 为整个el-tabs包裹el-form表单来保证后续填写内容的验证,然后在每个el-tabs-pane中包裹填充el-form-item来保证其验证
+// 在标签页跳转的时候使用标签的特定属性:before-leave来监听是否离开该标签,该属性绑定一个函数,
 
+// 并且包含两个参数activeName即将进入的标签页 oldActiveName即将离开的标签页在函数中返回布尔值来决定是否离开该标签页
+
+// 在三级子菜单动态参数展示的时候使用复选框el-checkbox来渲染attr_vals的数据(记得把动态的attr_vals转成数组遍历)
+
+// 静态参数因为attr_vals只有一个值,所以不需要转数组
+
+// 富文本编辑器的使用
+// 参考学习地址:https://github.com/surmon-china/vue-quill-editor
+// npm install vue-quill-editor --save
+// 导入组件和相关样式并安装组件
+// 使用组件并进行v-model双向绑定
+
+// 使用第三放库把对象进行深拷贝,复制出新的一份
+// npm install lodash --save
+// 导入第三方库 import _ from lodash -- 官方建议把库的名字命名为_
+// 具体深拷贝方法
+// const form = _.cloneDeep(dataForm)
+
+// 提交数据的时候记得进行本地表单验证
