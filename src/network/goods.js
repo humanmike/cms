@@ -9,3 +9,12 @@ export function getGoodsListApi(query) {
     params: query,
   })
 }
+
+// 删除商品Api
+// gid: 商品具体的id
+export function deleteGoodsApi(gid) {
+  return request({
+    url: `/goods/${gid}`,
+    method: 'delete',
+  })
+}

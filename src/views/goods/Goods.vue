@@ -29,7 +29,7 @@
                 <el-table-column label="操作" width="180">
                     <template slot-scope="scope">
                         <el-button type="primary">编辑</el-button>
-                        <el-button type="danger">删除</el-button>
+                        <el-button type="danger" @click="deleteGoodsFunc(scope.row)">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -52,6 +52,7 @@
     // 导入网络请求
     import {
       getGoodsListApi,
+      deleteGoodsApi,
     }
     from 'network/goods'
   export default {
@@ -87,6 +88,7 @@
     },
     methods: {
       // 1.网络请求
+      // 获取全部商品信息Api
       getGoodsListApi() {
         getGoodsListApi(this.goodsQueryInfo).then(res => {
           if (res.meta.status != 200) return this.$message.error('获取商品列表数据失败')
@@ -94,6 +96,16 @@
           this.goodsTableList = res.data.goods
           // 获取商品总数
           this.goodsTotal = res.data.total
+        })
+      },
+      // 删除商品Api
+      deleteGoodsApi(gid) {
+        deleteGoodsApi(gid).then(res => {
+          if (res.meta.status != 200) return this.$message.error('删除商品失败')
+          // 刷新页面
+          this.getGoodsListApi()
+          // 弹出成功提示
+          return this.$message.success('删除商品成功')
         })
       },
       // 2.事件监听
@@ -114,6 +126,22 @@
       // 跳转添加商品函数
       goAddGoodPageFunc() {
         this.$router.push('/goods/add')
+      },
+      // 删除商品函数
+      deleteGoodsFunc(row) {
+        // 获取删除商品需要的gid
+        const gid = row.goods_id
+        this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(successRes => {
+          // 像服务器发送删除商品
+          this.deleteGoodsApi(gid)
+        }).catch(errRes => {
+          return this.$message.info('取消删除商品成功')
+        })
+
       }
     },
     created() {
