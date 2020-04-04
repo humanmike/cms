@@ -186,3 +186,4 @@ type将当前列定义为模板列(这个template值为写死) template当前这
 // const form = _.cloneDeep(dataForm)
 
 // 提交数据的时候记得进行本地表单验证
+// 调教数据的时候记得goods_cat转换会字符串

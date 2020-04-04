@@ -12,7 +12,7 @@
             <el-row class="header-search">
                 <el-input clearable v-model="goodsQueryInfo.query" placeholder="请输入查询内容" @clear="getGoodsListApi" />
                 <el-button type="primary" @click="getGoodsListApi">查询</el-button>
-                <el-button type="primary">添加商品</el-button>
+                <el-button type="primary" @click="goAddGoodPageFunc">添加商品</el-button>
             </el-row>
             <!--el-table装载主要内容-->
             <el-table :data="goodsTableList" border>
@@ -89,7 +89,6 @@
       // 1.网络请求
       getGoodsListApi() {
         getGoodsListApi(this.goodsQueryInfo).then(res => {
-          console.log(res);
           if (res.meta.status != 200) return this.$message.error('获取商品列表数据失败')
           // 获取商品列表
           this.goodsTableList = res.data.goods
@@ -111,6 +110,10 @@
         this.goodsQueryInfo.pagenum = newNum
         // 重新发起请求
         this.getGoodsListApi()
+      },
+      // 跳转添加商品函数
+      goAddGoodPageFunc() {
+        this.$router.push('/goods/add')
       }
     },
     created() {

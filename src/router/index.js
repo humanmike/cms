@@ -14,6 +14,8 @@ const Roles = () => import('views/power/Roles')
 const Category = () => import('views/goods/Category')
 const Params = () => import('views/goods/Params')
 const Goods = () => import('views/goods/Goods')
+const AddGood = () => import('views/goods/AddGood')
+
 
 // 导出路由参数
 const routes = [
@@ -61,6 +63,10 @@ const routes = [
         path: '/goods',
         component: Goods
       },
+      {
+        path: '/goods/add',
+        component: AddGood,
+      }
     ]
     ,
     meta: {

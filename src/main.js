@@ -14,6 +14,14 @@ import TreeTable from 'vue-table-with-tree-grid'
 import 'element-ui/lib/theme-chalk/index.css'
 // 导入字体图标模板
 import 'assets/fonts/iconfont.css'
+// 导入富文本库
+import VueQuillEditor from 'vue-quill-editor'
+// 导入富文本库的css样式
+import 'quill/dist/quill.core.css' // import styles
+import 'quill/dist/quill.snow.css' // for snow theme
+import 'quill/dist/quill.bubble.css' // for bubble theme
+// 安装富文本库
+Vue.use(VueQuillEditor)
 
 // 安装elementUi组件
 Vue.use(ElementUi)
